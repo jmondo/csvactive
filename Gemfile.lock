@@ -1,0 +1,15 @@
+GIT
+  remote: git@github.com:jmondo/chronic.git
+  revision: 44e6196dc742518ade0e20a8c8f3ef969e3c55ed
+  specs:
+    chronic (0.8.0)
+
+GEM
+  remote: http://rubygems.org/
+  specs:
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  chronic!
