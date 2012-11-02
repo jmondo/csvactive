@@ -3,7 +3,7 @@ require 'csv'
 require 'chronic'
 
 # integers, currency, percents (truncate)
-regex = /^[\$]?(val:\d[\d,\.]*)[%]?\s*$/
+regex = /^(?<neg>[(-]?)[\$]?(?<val>\d[\d,\.]*)[%)]?\s*$/
 # http://rubular.com/r/uR3TqossJC
 
 # time, date
@@ -18,7 +18,11 @@ raise 'you need to pass a csv to import' unless file_path
 number_converter =
   proc do |field|
     match = regex.match(field)
-    match ? match[:val].to_f : field
+    if match
+      field = match[:val] && match[:val].to_f || match
+      field *= -1 if !match[:neg].empty?
+    end
+    field
   end
 
 time_converter =
