@@ -3,7 +3,7 @@ require 'csv'
 require 'chronic'
 
 # integers, currency, percents (truncate)
-FLOAT_REGEX = /^(?<neg>[(-]?)\$?(?<val>\d[\d,\.]*)(?<perc>%?)\)?\s*$/
+FLOAT_REGEX = /^(?<neg>[\(-]?)\$?(?<val>\d[\d,\.]*)(?<perc>%?)\)?\s*$/
 
 file_path = ARGV[0]
 raise 'you need to pass a csv to import' unless file_path
