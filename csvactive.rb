@@ -3,24 +3,18 @@ require 'csv'
 require 'chronic'
 
 # integers, currency, percents (truncate)
-regex = /^(?<neg>[(-]?)[\$]?(?<val>\d[\d,\.]*)[%)]?\s*$/
-# http://rubular.com/r/uR3TqossJC
-
-# time, date
-# Chronic.parse(value) # use mine
-
-# strings
-# use text
+FLOAT_REGEX = /^(?<neg>[(-]?)\$?(?<val>\d[\d,\.]*)(?<perc>%?)\)?\s*$/
 
 file_path = ARGV[0]
 raise 'you need to pass a csv to import' unless file_path
 
 number_converter =
   proc do |field|
-    match = regex.match(field)
+    match = FLOAT_REGEX.match(field)
     if match
       field = match[:val] && match[:val].to_f || match
       field *= -1 if !match[:neg].empty?
+      field /= 100 if !match[:perc].empty?
     end
     field
   end
