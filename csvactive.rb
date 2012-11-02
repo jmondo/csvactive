@@ -3,7 +3,7 @@ require 'csv'
 require 'chronic'
 
 # integers, currency, percents (truncate)
-FLOAT_REGEX = /^(?<neg>[\(-]?)\$?(?<val>\d[\d,\.]*)(?<perc>%?)\)?\s*$/
+FLOAT_REGEX = /^(?<neg>[\(-]?)\$?(?<val>\.?\d[\d,\.]*)(?<perc>%?)\)?\s*$/
 
 file_path = ARGV[0]
 raise 'you need to pass a csv to import' unless file_path
@@ -12,7 +12,7 @@ number_converter =
   proc do |field|
     match = FLOAT_REGEX.match(field)
     if match
-      field = match[:val] && match[:val].to_f || match
+      field = match[:val].to_f
       field *= -1 if !match[:neg].empty?
       field /= 100 if !match[:perc].empty?
     end
