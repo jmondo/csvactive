@@ -59,7 +59,7 @@ class CSVParser
   end
 
   def column_types
-    @column_types ||= csv.shift.to_hash.each_with_object({}) do |(header, value), hash|
+    @column_types ||= csv.shift.each_with_object({}) do |(header, value), hash|
       hash[header] = DATA_TYPES[value.class.to_s]
     end
   end
@@ -77,12 +77,9 @@ end
 
 class Thing < ActiveRecord::Base
   def self.import_data
+    delete_all
     @@csv_parser.csv.each do |row|
-      attributes = {}
-      row.to_hash.each do |header, value|
-        attributes[header] = value
-      end
-      create!(attributes)
+      create!(row.to_hash)
     end
   end
 end
