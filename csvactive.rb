@@ -37,11 +37,11 @@ class CSVParser
     end
 
   CSV_OPTIONS = {
-    converters: [NUMBER_CONVERTER, TIME_CONVERTER],
-    header_converters: [HEADER_CONVERTER],
-    headers: :first_row,
-    return_headers: false,
-    encoding: 'UTF-8'
+    :converters => [NUMBER_CONVERTER, TIME_CONVERTER],
+    :header_converters => [HEADER_CONVERTER],
+    :headers => :first_row,
+    :return_headers => false,
+    :encoding => 'UTF-8'
   }
 
   DATA_TYPES = {
