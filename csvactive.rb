@@ -6,7 +6,7 @@ require 'csv'
 require 'chronic'
 require 'active_record'
 require 'yaml'
-require 'pry-debugger'
+require 'pry'
 
 dbconfig = YAML::load(File.open('database.yml'))
 ActiveRecord::Base.establish_connection(dbconfig)
