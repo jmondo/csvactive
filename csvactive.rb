@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 require 'rubygems'
+require 'bundler/setup'
+
 require 'csv'
 require 'chronic'
 require 'active_record'
 require 'yaml'
-require 'debugger'
-require 'active_support/core_ext'
 require 'pry'
 
 dbconfig = YAML::load(File.open('database.yml'))
@@ -42,7 +42,8 @@ time_converter =
 csv_options = {
   converters: [number_converter, time_converter],
   headers: :first_row,
-  return_headers: false
+  return_headers: false,
+  encoding: 'UTF-8'
 }
 
 @@csv_array = CSV.open(file_path, 'rb', csv_options).to_a
