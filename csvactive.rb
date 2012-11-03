@@ -8,9 +8,6 @@ require 'active_record'
 require 'yaml'
 require 'pry'
 
-dbconfig = YAML::load(File.open('database.yml'))
-ActiveRecord::Base.establish_connection(dbconfig)
-
 # integers, currency, percents (truncate)
 # TODO: phone numbers!
 class CSVParser
@@ -86,6 +83,9 @@ end
 
 file_path = ARGV[0]
 raise 'you need to pass a csv to import' unless file_path
+
+dbconfig = YAML::load(File.open('database.yml'))
+ActiveRecord::Base.establish_connection(dbconfig)
 
 %x( rm ./data.sqlite3 )
 @@csv_parser = CSVParser.new(file_path)
