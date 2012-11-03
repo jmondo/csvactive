@@ -6,7 +6,7 @@ require 'csv'
 require 'chronic'
 require 'active_record'
 require 'yaml'
-require 'pry'
+require 'pry-debugger'
 
 dbconfig = YAML::load(File.open('database.yml'))
 ActiveRecord::Base.establish_connection(dbconfig)
@@ -38,6 +38,12 @@ class CSVParser
     encoding: 'UTF-8'
   }
 
+  DATA_TYPES = {
+    "String" => :text,
+    "Float" => :float,
+    "Time" => :datetime
+  }
+
   def initialize(file_path)
     @file_path = file_path
   end
@@ -47,25 +53,29 @@ class CSVParser
   end
 
   def column_types
-    unless @column_types
-      @columns_types = csv.shift.to_hash
-      @columns_types.each do |header, value|
-        @columns_types[header] = value.class.to_s
-      end
+    @column_types ||= csv.shift.to_hash.each_with_object({}) do |(header, value), hash|
+      hash[convert_to_column_name(header)] = DATA_TYPES[value.class.to_s]
     end
+  end
+
+  def column_name_syms
+    @column_name_syms ||= csv.shift.to_hash.each_with_object({}) do |(header, value), hash|
+      hash[header] = convert_to_column_name(header)
+    end
+  end
+
+  protected
+
+  def convert_to_column_name(string)
+    string.gsub(' ','_').downcase
   end
 end
 
 class CreateThings < ActiveRecord::Migration
-  DATA_TYPES = {
-    "String" => :text,
-    "Float" => :float,
-    "Time" => :datetime
-  }
   def up
     create_table :things do |t|
       @@csv_parser.column_types.each do |title, type|
-        t.column title.gsub(' ','_').downcase, DATA_TYPES[type]
+        t.column title, type
       end
     end
   end
