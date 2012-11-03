@@ -31,8 +31,14 @@ class CSVParser
       Chronic.parse(field) || field
     end
 
+  HEADER_CONVERTER =
+    proc do |field|
+      field.gsub(' ','_').downcase
+    end
+
   CSV_OPTIONS = {
     converters: [NUMBER_CONVERTER, TIME_CONVERTER],
+    header_converters: [HEADER_CONVERTER],
     headers: :first_row,
     return_headers: false,
     encoding: 'UTF-8'
@@ -54,28 +60,16 @@ class CSVParser
 
   def column_types
     @column_types ||= csv.shift.to_hash.each_with_object({}) do |(header, value), hash|
-      hash[convert_to_column_name(header)] = DATA_TYPES[value.class.to_s]
+      hash[header] = DATA_TYPES[value.class.to_s]
     end
-  end
-
-  def column_name_syms
-    @column_name_syms ||= csv.shift.to_hash.each_with_object({}) do |(header, value), hash|
-      hash[header] = convert_to_column_name(header)
-    end
-  end
-
-  protected
-
-  def convert_to_column_name(string)
-    string.gsub(' ','_').downcase
   end
 end
 
 class CreateThings < ActiveRecord::Migration
   def up
     create_table :things do |t|
-      @@csv_parser.column_types.each do |title, type|
-        t.column title, type
+      @@csv_parser.column_types.each do |col_name, type_sym|
+        t.column col_name, type_sym
       end
     end
   end
@@ -86,7 +80,7 @@ class Thing < ActiveRecord::Base
     @@csv_parser.csv.each do |row|
       attributes = {}
       row.to_hash.each do |header, value|
-        attributes[header.gsub(' ','_').downcase] = value
+        attributes[header] = value
       end
       create!(attributes)
     end
